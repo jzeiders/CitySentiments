@@ -1,0 +1,33 @@
+{
+  "name": "citysentiments",
+  "version": "1.0.0",
+  "description": "Tracks City Sentiments",
+  "main": "server.js",
+  "scripts": {
+    "test": "npm run tests",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jzeiders/CitySentiments.git"
+  },
+  "dependencies": {
+    "express": "^4.14.0",
+    "firebase": "^3.5.1",
+    "moment": "^2.15.2",
+    "node-twitter-api": "^1.8.0",
+    "promise": "^7.1.1",
+    "request": "^2.75.0",
+    "sentiment": "^2.1.0"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^3.1.0"
+  },
+  "author": "Jack Zeiders",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jzeiders/CitySentiments/issues"
+  },
+  "homepage": "https://github.com/jzeiders/CitySentiments#readme"
+}
