@@ -6,12 +6,11 @@ var db = require("./helpers/db.js");
 var fileGen = require("./helpers/fileGen.js");
 var app = express();
 
-twitter.dataSweep();
-fileGen.generateArcs();
+
 // twitter.get()
 // twitter.getCityTweets("LA","Boston")
 // fileGen.uploadCitiesJson();
-db.scoreJob();
+// db.scoreJob();
 
 app.get("/scores", function(req,res){
   db.getScores().then(function(data){
@@ -22,5 +21,6 @@ app.get("/scores", function(req,res){
   });
 });
 app.listen(3000, function() {
+  twitter.dataCollectionJob();
 	console.log("started server");
 });

@@ -7,11 +7,10 @@ var config = {
 	messagingSenderId: "232201582702"
 };
 firebase.initializeApp(config);
-
 var pushData = function(cityFrom, cityTo, sentiments) {
 	var ref = firebase.database().ref("rawData/" + cityFrom + "/" + cityTo);
 	return new Promise(function(resolve, reject) {
-		ref.orderByKey().limitToLast(100).once("value", function(data) {
+		ref.orderByKey().limitToLast(10).once("value", function(data) {
 			data.forEach(function(v) {
 				for (var i = 0; i < sentiments.length; i++) {
 					if (v.key === sentiments[i].time) {
@@ -20,9 +19,12 @@ var pushData = function(cityFrom, cityTo, sentiments) {
 					}
 				}
 			});
-			var updateObj = {}
+			var updateObj = {};
 			for (var i = 0; i < sentiments.length; i++) {
-				updateObj[sentiments[i].time] = sentiments[i].sentiment
+				updateObj[sentiments[i].time] = {
+          score: sentiments[i].sentiment,
+          text: sentiments[i].text
+        };
 					// ref.child(sentiments[i].time).set(sentiments[i].sentiment);
 			}
 			ref.update(updateObj);
