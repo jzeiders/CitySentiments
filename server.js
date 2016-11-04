@@ -20,7 +20,9 @@ app.get("/scores", function(req,res){
   	console.log("FUCKING ERROR: ", err);
   });
 });
-app.listen(3000, function() {
+app.set('port', (process.env.PORT || 5000));
+
+app.listen(app.get('port'), function() {
   twitter.dataCollectionJob();
 	console.log("started server");
 });
