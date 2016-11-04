@@ -7,7 +7,7 @@ var moment = require("moment")
 var sentiment = require('sentiment');
 var gju = require('geojson-utils');
 var db = require("./db.js");
-var fuzzy = require("fuzzzy");
+var fuzzy = require("fuzzy");
 // var client = new Twitter({
 // 	consumer_key: 'qfsPHblfljde28BUXfkw27yzt',
 // 	consumer_secret: 'khkTIvHNNDzAa82LerD1hwVI3UlGGwj6FxCmK1kiNXqzM9R8HV',
@@ -97,48 +97,47 @@ var dataSweep = function() {
 
 	Promise.all(cityPromises).done(function(results) {
 		db.setPullTime(moment().unix());
-		console.log(results);
 	});
 };
 var catalogAndStore = function(tweet) {
 	var cityFrom = null,
-		cityTo = null
+		cityTo = null;
 	for (var key in cities) {
 		city = cities[key];
 		if (cities.hasOwnProperty(key)) {
-			if (tweet.text.search(city.name) != -1) {
+			var results = fuzzy.filter(city.name, [tweet.text]);
+			if (results.length > 0 && results[0].score>15)
 				cityTo = city;
-			}
-			if (checkIntersection(tweet, city)) {
-				cityFrom = city;
-			}
 		}
-	}
-	if (cityFrom != null && cityTo != null && cityTo != cityFrom) {
+		if (checkIntersection(tweet, city)) {
+			cityFrom = city;
+		}
+	};
+	if (cityFrom !== null && cityTo !== null && cityTo != cityFrom) {
 		console.log("WE LOGGED A TWEET HOLY SHIT");
 		db.pushData(cityFrom.name, cityTo.name, [{
 			time: moment(tweet.created_at, 'dd MMM DD HH:mm:ss ZZ YYYY', 'en').unix(),
 			sentiment: sentiment(tweet.text).score,
-      text: tweet.text
-		}])
+			text: tweet.text
+		}]);
 	}
-}
+};
 var boundingBoxes = function() {
-	locations = ""
+	locations = "";
 	for (var key in cities) {
 		city = cities[key];
 		if (cities.hasOwnProperty(key)) {
 			locations = locations + city.box + ","
 		}
 	}
-	return locations.slice(0,locations.length-1)
-}
+	return locations.slice(0, locations.length - 1);
+};
 var checkIntersection = function(tweet, city) {
 	var tweetBound = tweet.place.bounding_box;
 	if (gju.pointInPolygon({
 			"type": "Point",
 			"coordinates": [city.lng, city.lat]
-		}, tweetBound) != false) {
+		}, tweetBound) !== false) {
 		return true;
 	}
 	return false;
@@ -149,18 +148,18 @@ var openStream = function() {
 	}, function(stream) {
 		console.log("Opened Stream");
 		stream.on('data', function(tweet) {
-			catalogAndStore(tweet, city)
+			catalogAndStore(tweet, city);
 		});
 
 		stream.on('error', function(error) {
 			console.log(error);
 		});
 	});
-}
+};
 var dataCollectionJob = function() {
 	openStream();
 	console.log("Opened streams");
-}
+};
 module.exports = {
 	getCityTweets: getCityTweets,
 	getCitySentiment: getCitySentiment,

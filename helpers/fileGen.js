@@ -17,7 +17,7 @@ var generateArcs = function() {
 							if (v.key == cityTo) return true;
 							return false;
 						});
-            console.log(cityToData);
+            console.log(ctyToData);
 						arcs.features.push({
 							type: "LineString",
 							coordinates: [
